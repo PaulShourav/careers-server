@@ -37,8 +37,18 @@ router.delete('/:id',async(req,res)=>{
         await jobsModel.findByIdAndRemove(req.params.id);
         return res.json({ message: 'Job deleted successfully',statusCode:200 });
     } catch (error) {
-        console.error('Error deleting job:', error);
+        console.error(error);
         res.status(500).json({ error: "There was a serser side error." })
     }
+})
+router.get('/:slug',async(req,res)=>{
+    try {
+        const slug = req.params.slug;
+        const job = await jobsModel.findOne({slug});
+        res.status(200).json(job);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({error: "There was a serser side error."});
+      }
 })
 module.exports = router
