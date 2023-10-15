@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const jobsModel = require('../models/jobsModel')
+const verifyToken=require('../middlewares/verifyToken')
 
 router.get('/', async (req, res) => {
     try {
@@ -40,7 +41,19 @@ router.delete('/:id',async(req,res)=>{
         res.status(500).json({ error: "There was a serser side error." })
     }
 })
+router.get('/details/:slug',async(req,res)=>{
+    console.log('paici',req.params.slug);
+    try {
+        const slug = req.params.slug;
+        const job = await jobsModel.findOne({slug});
+        res.status(200).json(job);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({error: "There was a serser side error."});
+      }
+})
 router.get('/:slug',async(req,res)=>{
+   
     try {
         const slug = req.params.slug;
         const job = await jobsModel.findOne({slug});
@@ -62,5 +75,8 @@ router.patch('/update',async(req,res)=>{
             res.status(500).json({ error: "There was a serser side error." })
         }
       }
+})
+router.post('/applyJob',async(req,res)=>{
+
 })
 module.exports = router
