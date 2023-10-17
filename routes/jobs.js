@@ -77,6 +77,11 @@ router.patch('/update',async(req,res)=>{
       }
 })
 router.post('/applyJob',async(req,res)=>{
-
+    try {
+        const result= await jobsModel.findByIdAndUpdate( req.query._id,{ status: req.query.status },{ new: true });
+         res.json({ statusCode:200 ,result})
+     } catch (error) {
+         res.status(500).json({ error: "There was a serser side error." })
+     }
 })
 module.exports = router
