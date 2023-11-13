@@ -14,7 +14,7 @@ router.get('/',async(req,res)=>{
 })
 router.post('/',async(req,res)=>{
     try {
-        const findSomeJob= await applyJobModel.findOne({email:req.body.email,jobId:req.body.jobId})
+        const findSomeJob= await applyJobModel.findOne({email:req.body.email,job:req.body.job})
         if (findSomeJob) {
             res.json({ statusCode:200 ,message:'Already you have been Applied the Job.'})
         }else{
