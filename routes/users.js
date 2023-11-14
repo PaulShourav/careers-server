@@ -81,7 +81,7 @@ router.patch('/update',upload.single('file'), async (req, res) => {
     console.log(data);
     console.log(findCandidate);
     try {
-        const userUpdated = await usersModel.findByIdAndUpdate(data._id, req.body.data, { new: true });
+        const userUpdated = await usersModel.findByIdAndUpdate(data._id,data, { new: true });
         res.status(200).json({ message: 'Successfully Updated', statusCode: 200, userUpdated });
     } catch (error) {
         console.error(error);
