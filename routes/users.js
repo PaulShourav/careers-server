@@ -1,60 +1,93 @@
-const express=require('express')
-const multer  = require('multer')
-const router=express.Router()
+const express = require('express')
+const multer = require('multer')
+const router = express.Router()
 const fs = require('fs');
 const path = require('path');
 
-const usersModel=require('../models/usersModel')
+const usersModel = require('../models/usersModel')
 
 // Define the upload folder
 const uploadFolder = 'uploads/';
 
 // Ensure the upload folder exists; create it if not
 if (!fs.existsSync(uploadFolder)) {
-  fs.mkdirSync(uploadFolder);
+    fs.mkdirSync(uploadFolder);
 }
-const storage=multer.diskStorage({
-    destination:function (req,file,cd) {
-         cd(null,uploadFolder)
+const storage = multer.diskStorage({
+    destination: function (req, file, cd) {
+        cd(null, uploadFolder)
     },
-    filename:function(req,file,cd){
-       cd(null,`${Date.now()}_${file.originalname}`)
+    filename: function (req, file, cd) {
+        cd(null, `${Date.now()}_${file.originalname}`)
     }
 })
 const upload = multer({ storage: storage })
 
 
-router.get('/',async(req,res)=>{
-   
+router.get('/', async (req, res) => {
+
     try {
-        const data=await usersModel.find({})
-        res.status(200).json({data})
+        const data = await usersModel.find({})
+        res.status(200).json({ data })
     } catch (error) {
-        res.status(500).json({error:"There was a serser side error."})
+        res.status(500).json({ error: "There was a serser side error." })
     }
-    
-    
+
+
 })
-router.get('/adminUser',async(req,res)=>{
-   console.log('admin');
+router.get('/adminUser', async (req, res) => {
+    console.log('admin');
     try {
-        const data=await usersModel.findOne({email:req.query.email,role:"admin"}).select('email')
+        const data = await usersModel.findOne({ email: req.query.email, role: "admin" }).select('email')
         console.log(data);
         res.status(200).json(data)
     } catch (error) {
-        res.status(500).json({error:"There was a serser side error."})
+        res.status(500).json({ error: "There was a serser side error." })
     }
-    
-    
+
+
 })
-router.post('/',upload.single('file'),async(req,res)=>{
-    const data=JSON.parse(req.body.newData)
-    data['resumeFile']=req.file.filename
-  
-    const result=new usersModel(data)
+router.get('/candidateUser', async (req, res) => {
+   
+    try {
+        const data = await usersModel.findOne({ email: req.query.email, role: "candidate" })
+       
+        res.status(200).json(data)
+    } catch (error) {
+        res.status(500).json({ error: "There was a serser side error." })
+    }
+
+
+})
+router.post('/', upload.single('file'), async (req, res) => {
+    const data = JSON.parse(req.body.newData)
+    data['resumeFile'] = req.file.filename
+
+    const result = new usersModel(data)
     await result.save()
-    .then(()=>res.status(200).json({message:"Successfully Sign up."}))
-    .catch((err)=>res.status(500).json({error:"There was a serser side error."}))
-    
+        .then(() => res.status(200).json({ message: "Successfully Sign up." }))
+        .catch((err) => res.status(500).json({ error: "There was a serser side error." }))
+
 })
-module.exports=router
+router.patch('/update',upload.single('file'), async (req, res) => {
+    const data = JSON.parse(req.body.newData)
+    const email = data.email
+        const findCandidate = await usersModel.findOne({ email });
+        if (findCandidate.resumeFile && data.resumeFile) {
+            const oldFilePath ='uploads/'+findCandidate.resumeFile;
+            fs.unlinkSync(oldFilePath);
+            data['resumeFile'] = req.file.filename
+        }
+    console.log(data);
+    console.log(findCandidate);
+    try {
+        const userUpdated = await usersModel.findByIdAndUpdate(data._id, req.body.data, { new: true });
+        res.status(200).json({ message: 'Successfully Updated', statusCode: 200, userUpdated });
+    } catch (error) {
+        console.error(error);
+       
+            res.status(500).json({ error: "There was a serser side error." })
+        
+    }
+})
+module.exports = router
