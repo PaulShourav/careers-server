@@ -4,9 +4,16 @@ const applyJobModel=require('../models/applyJobModel')
 const jobsModel = require('../models/jobsModel')
 
 router.get('/',async(req,res)=>{
-    console.log(req.query.email);
     try {
         const data=await applyJobModel.find({email:req.query.email}).populate('job')
+        res.status(200).json(data)
+    } catch (error) {
+        res.status(500).json({ error: "There was a serser side error." })
+    }
+})
+router.get('/applied',async(req,res)=>{
+    try {
+        const data=await applyJobModel.find({})
         res.status(200).json(data)
     } catch (error) {
         res.status(500).json({ error: "There was a serser side error." })
@@ -19,7 +26,9 @@ router.post('/',async(req,res)=>{
             res.json({ statusCode:200 ,message:'Already you have been Applied the Job.'})
         }else{
             const result=new applyJobModel(req.body)
-            await result.save()
+            const newAppliedJob=await result.save()
+           await jobsModel.updateOne({_id:req.body.job},{$push:{appliedJobs:newAppliedJob._id}})
+            
             res.json({ statusCode:200 ,message:'Sucessfully Applied the Job.',result})
         }
         

@@ -38,8 +38,7 @@ router.get('/', async (req, res) => {
 router.get('/adminUser', async (req, res) => {
     console.log('admin');
     try {
-        const data = await usersModel.findOne({ email: req.query.email, role: "admin" }).select('email')
-        console.log(data);
+        const data = await usersModel.findOne({ email: req.query.email, role: "admin" })
         res.status(200).json(data)
     } catch (error) {
         res.status(500).json({ error: "There was a serser side error." })
@@ -78,8 +77,7 @@ router.patch('/update',upload.single('file'), async (req, res) => {
             fs.unlinkSync(oldFilePath);
             data['resumeFile'] = req.file.filename
         }
-    console.log(data);
-    console.log(findCandidate);
+   
     try {
         const userUpdated = await usersModel.findByIdAndUpdate(data._id,data, { new: true });
         res.status(200).json({ message: 'Successfully Updated', statusCode: 200, userUpdated });

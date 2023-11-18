@@ -19,7 +19,12 @@ const jobSchema=new mongoose.Schema({
     status:{
         type:String,
         default:'deactive'
-    }
+    },
+    appliedJobs:[
+        {
+            type:mongoose.Schema.Types.ObjectId,ref:"AppliedJob"
+        }
+    ]
 })
 
 module.exports=new mongoose.model('Job',jobSchema)
