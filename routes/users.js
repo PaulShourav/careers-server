@@ -35,8 +35,8 @@ router.get('/', async (req, res) => {
 
 
 })
+// Get user by email where user role type is admin
 router.get('/adminUser', async (req, res) => {
-    console.log('admin');
     try {
         const data = await usersModel.findOne({ email: req.query.email, role: "admin" })
         res.status(200).json(data)
@@ -45,6 +45,16 @@ router.get('/adminUser', async (req, res) => {
     }
 
 
+})
+//Get all user where role type is admin
+router.get('/all-admin-users', async (req, res) => {
+    console.log(req.query.role);
+    try {
+        const data = await usersModel.find({role: req.query.role }) 
+        res.status(200).json(data)
+    } catch (error) {
+        res.status(500).json({ error: "There was a serser side error." })
+    }
 })
 router.get('/candidateUser', async (req, res) => {
    

@@ -11,9 +11,9 @@ router.get('/',async(req,res)=>{
         res.status(500).json({ error: "There was a serser side error." })
     }
 })
-router.get('/applied',async(req,res)=>{
+router.get('/all-applied-jobs',async(req,res)=>{
     try {
-        const data=await applyJobModel.find({})
+        const data=await jobsModel.find({}).populate('appliedJobs')
         res.status(200).json(data)
     } catch (error) {
         res.status(500).json({ error: "There was a serser side error." })
