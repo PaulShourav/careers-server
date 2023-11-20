@@ -1,5 +1,6 @@
 const express = require('express')
 const multer = require('multer')
+const jwt=require('jsonwebtoken')
 const router = express.Router()
 const fs = require('fs');
 const path = require('path');
@@ -23,7 +24,14 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage })
 
-
+router.post('/jwt-signin',(req,res)=>{
+    const user=req.body
+    console.log(user);
+    const token=jwt.sign(user,process.env.SECRET_ACCESS_TOKEN,{
+      expiresIn:"1h"
+    })
+    res.status(200).json({token})
+  })
 router.get('/', async (req, res) => {
 
     try {

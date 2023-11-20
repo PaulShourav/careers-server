@@ -2,8 +2,10 @@ const express=require('express')
 const router=express.Router()
 const applyJobModel=require('../models/applyJobModel')
 const jobsModel = require('../models/jobsModel')
+const verifyToken=require('../middlewares/verifyToken')
 
-router.get('/',async(req,res)=>{
+router.get('/',verifyToken,async(req,res)=>{
+    
     try {
         const data=await applyJobModel.find({email:req.query.email}).populate('job')
         res.status(200).json(data)
